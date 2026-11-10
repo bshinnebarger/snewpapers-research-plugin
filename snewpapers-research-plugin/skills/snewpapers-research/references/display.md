@@ -12,13 +12,13 @@ One block per component, in this order, so a researcher can scan a page of them:
 Commodore Tingey's report on the burning of the Washington Navy Yard: ordered to destroy
 shipping and stores if the enemy succeeded; the yard fired about 8:20 pm; the Capitol
 already burning as he left.
-Persons: thomas tingey, gen. ross · Location: washington navy yard · Outcome: yard and stores destroyed
+Persons: thomas tingey, gen. ross · Location: washington navy yard · Keywords: navy yard, burning, capitol
 https://snewpapers.com/components/<uuid>_evt_0
 ```
 
 Paper name in title case (the API lowercases), date as day month year, then label and tier.
-The summary as given. The structured fields that carry the answer (from `fields`), not all
-of them. Last, the `site_url` on its own line - the snewpapers.com page is the citation and
+The summary as given. The persons, the locations and a few keywords, plus the structured fields
+that carry the answer (from `fields`), not all of them. Last, the `site_url` on its own line - the snewpapers.com page is the citation and
 every block carries it; the LoC PDF link joins it on full text (below), where the researcher
 will want to check the source. For a caution hit under guardrails: the paper, date, label and
 `caution_description`, and one line saying the text is withheld under guardrails.

@@ -134,7 +134,7 @@ not know come back in `missing`, free.
 ## 8. Paging correctly
 
 Page 1 returns `cursor`. Page 2 is the same `filters` and `text` plus `"page": 2, "cursor": "<from page 1>"`.
-The cursor pins the ranking, so pages never overlap or shift. It expires ~10 minutes after
+The cursor pins the ranking, so pages never overlap or shift. It expires 2 minutes after
 its last use (a 400 says start again). Page 11 is a 400 by design: if the answer is not in
 250 hits, the query is too wide - facet on `keywords`, `lccns` or `year_histogram` and add
 filters. Do not page to "see everything".
