@@ -23,69 +23,78 @@ Read this file whole. Load the references when you need them:
 - `references/caveats.md` - what bites, and what to tell the researcher
 - `references/research-folder.md` - the per-topic folder to keep when the researcher is digging (offer once; skip for casual questions)
 
-## The rules (the six that cost money or produce wrong answers)
+## The rules (ten; the method below is how to do each of them well)
 
 1. **`research_guide` first, `research_corpus` once** (both free), before any search.
-2. **Facets before search** for anything tied to a place or a period: zero hits usually
-   means a coverage gap, not a bad query.
-3. **`must_have_keywords` is AND, `should_have_keywords` is OR.** One or two words every
-   relevant document must contain go in must; period spellings and synonyms go in should.
-   `semantic_text` widens the match; the response's `mode` says what matched.
-4. **Skim with `hit_shape: "compact"`**, open the few that matter; full text is the
-   expensive move (3 tokens a component, once).
-5. **Ask once about caution content, at the start.** For research the better experience
-   is `guarded: false` on every call; keep the default only if your own content rules
-   cannot handle historical news that is offensive by modern standards.
-6. **Cite in place** from the component's `citation` object; quote from full text, never
-   from a summary.
+2. **Coverage before topic** for anything tied to a place or a period: facet the place x era
+   first. Zero hits usually means a coverage gap, not a bad query - say "not processed yet"
+   and offer the nearest thing (national, neighbouring states, other decades).
+3. **`must_have_keywords` is AND, `should_have_keywords` is OR.** The one or two words every
+   relevant document must contain go in must; period spellings and synonyms go in should,
+   never in must. `semantic_text` widens the match and reaches only narrative genres indexed
+   for meaning; runaways, auctions, listings and the like are found by keywords and
+   structured fields only. The response's `mode` says what matched.
+4. **Discover the vocabulary before you filter on it.** A word like "slavery" is often a
+   metaphor before 1800: `research_vocabulary` or facets on types, themes and keywords within
+   the period give the real sub-labels and terms.
+5. **Place names collide** (York VA, York Upper Canada, New York): add a state filter or a
+   phrase like "york, upper canada".
+6. **Skim with `hit_shape: "compact"`**, open the few that matter; full text is the expensive
+   move (3 tokens a component, once). A search stops at page 10 - narrow with facets; only
+   issue browse (`filters.issue_uuid`, no text, `sort: pages:asc`) pages a whole paper.
+7. **Keep a hit's `event_id` to open it.** A multi-event component (a notice listing eight
+   deaths) is one uuid with several events; `expand_events` shows each.
+8. **Read the data's own flags.** Only `green` and `yellow` quality tiers are served (`red`,
+   ~0.3%, never appears); `chain_members > 1` is a story merged across pages; `resolved:
+   false` means something indicated it is incomplete - check coverage before hunting the
+   rest (caveats.md).
+9. **Ask once about caution content, at the start.** For research the better experience is
+   `guarded: false` on every call; keep the default only if your own content rules cannot
+   handle historical news that is offensive by modern standards.
+10. **Cite in place** from the component's `citation` object: paper, date and label on every
+    hit with the site link; the Library of Congress PDF only with full text; quote only from
+    full text you fetched, never from a summary.
 
-The method below is how to do each of these well.
+For a prolonged deep dive - the researcher is going to come back to a topic over days -
+and when you can write to a local folder or a cloud drive, offer the research folder once:
+the structure and the files to keep are in `references/research-folder.md`.
 
 ## What the corpus is, and is not
 
 - **Source:** Library of Congress Chronicling America page scans, re-read into
-  article-shaped components. A small fraction of Chronicling America is processed
-  so far - already an enormous corpus, growing daily - and, like Chronicling
-  America itself, it is **weighted to the 1800s**. `research_corpus` gives the
-  live size, span, decade histogram and the honest coverage fraction;
-  `research_titles` says which papers exist, which are processed and how much.
-- **Zero hits usually means a coverage gap, not a bad query.** Check before you
-  re-query (see the procedure).
+  article-shaped components. snewpapers is working towards full coverage of
+  Chronicling America, with the index growing by tens of thousands of components
+  daily (live status: https://snewpapers.com/ca-progress); like Chronicling
+  America itself, it is **weighted to the 1800s**, and some regions x decades are
+  still thin or empty. `research_corpus` gives the live size, span, decade
+  histogram and the honest coverage fraction; `research_titles` says which papers
+  exist, which are processed and how much. Treat a gap as "not processed yet",
+  never as a reason to distrust what is there.
 - Every component carries its snewpapers.com page (`site_url`). Always give it
   when you cite a component: on a full text and on a summary block alike.
 
 ## The procedure
 
-1. **What exists:** `research_corpus` once per session (free). It is national-only:
-   size, span and the decade histogram for the whole corpus; coverage by place is
-   step 2.
-2. **Place x era first:** for any question tied to a region or state and a
-   period, run `research_facets` with `filters.regions` (or a `states` term
-   filter) and `flat_facets: ["decade_histogram"]` before anything else. If the
-   count is ~0, tell the researcher the corpus does not cover it yet and offer the
-   nearest thing (national, neighbouring states, other decades). To see coverage
-   by state in one call, facet with no text: `nested_facets: {"states":
-   ["decade_histogram"]}` - a states x decades table of what is processed.
-3. **Learn the vocabulary:** `research_labels` (free) for the genres and their
-   structured fields; `research_vocabulary` (free) for a label's common types
-   (its sub-labels), themes and keywords, optionally within a period or a paper;
-   or `research_facets` on `types`, `themes`, `keywords` with the same filters
-   when you also want text or semantic constraints. Filter on the values these
-   return, not on guesses.
-4. **Find hotspots:** `research_facets` (2 tokens) anchored with
-   `must_have_phrase` or `must_have_keywords` plus filters. Facets count matching
-   documents; `should_have_*` and `semantic_text` only widen the match.
-5. **Read summaries:** `research_search` (1 token per page of 25). Skim with
-   `hit_shape: "compact"` (identity, label, tier, caution, summary, link - half the
-   bytes, same price), then open the few that matter; ask for the full shape when the
-   lists and structured fields decide relevance. Most questions are answered here.
-6. **Open the few that matter:** `research_component` or, for several at once,
-   `research_components`: 1 token per component, or with `include_text` 3 per
-   component the first time and 0 after. Add the text only when the researcher
-   needs the words.
-7. **Deliver:** cite in place from the component's `citation` object (paper, date,
-   page, label, site link; `formatted` is ready to paste), or offer a research folder
-   (research-folder.md).
+1. **What exists:** `research_corpus` (free): size, span, decade histogram and the
+   coverage fraction, national only.
+2. **Place x era:** `research_facets` with `filters.regions` (or a `states` term filter)
+   and `flat_facets: ["decade_histogram"]`; for every state at once, no text and
+   `nested_facets: {"states": ["decade_histogram"]}` - a states x decades table of what
+   is processed.
+3. **Vocabulary:** `research_labels` (free) for the genres and their structured fields;
+   `research_vocabulary` (free) for a label's types, themes and keywords, optionally within
+   a period or a paper; `research_facets` on those fields when text or semantic
+   constraints apply. Filter on the values these return.
+4. **Hotspots:** `research_facets` (2 tokens) anchored with `must_have_phrase` or
+   `must_have_keywords` plus filters. Facets count matching documents; `should_have_*`
+   and `semantic_text` only widen the match.
+5. **Summaries:** `research_search` (1 token a page of 25), compact first, the full shape
+   when the lists and structured fields decide relevance. Most questions are answered here.
+6. **The few that matter:** `research_component`, or `research_components` for several:
+   1 token a component, with `include_text` 3 the first time and 0 after. Add the text
+   only when the researcher needs the words.
+7. **Deliver:** the component's `citation` object (paper, date, page, label, site link;
+   `formatted` is ready to paste), or the research folder for a long dive.
 
 Arguments to `research_search`, `research_facets` and `research_components` go
 under a single `query` key.
@@ -144,30 +153,3 @@ is done - report the remaining tokens and the price, do not retry. A monthly
 grant resets each period; purchased tokens carry over. A typical multi-topic
 session costs 100-150 tokens; full text is the meter that moves, and a page of
 full texts (25 x 3) is the most expensive call there is - open the few that matter.
-
-## Ten things to remember
-
-1. Coverage first for place x era; say "not covered yet" when it is true.
-2. Spellings and synonyms go in `should_have_keywords`, never in must.
-3. Never-embed genres are found by keywords and structured fields only.
-4. A word like "slavery" is often a metaphor before 1800 - discover the real
-   sub-labels, themes and keywords first (`research_vocabulary` or facets with
-   the period) and filter on those.
-5. Place names collide (York VA, York Upper Canada, New York): add a state
-   filter or a phrase like "york, upper canada".
-6. Only `green` and `yellow` quality tiers are served; `red` (a damaged or
-   incoherent extraction, ~0.3%) is never a hit or a fetch - `research_corpus`
-   reports its count. Full text is cleaned by the extractor (OCR errors mostly
-   gone, archaic spellings kept on purpose).
-7. `chain_members > 1` is a story merged across pages; its evidence is the
-   worst case over the fragments. `resolved: false` means something indicated
-   the component is incomplete - often innocuous (continued from or in another
-   issue), sometimes a lost opening; check coverage before hunting the rest.
-8. A search stops at page 10; narrow with facets. Only issue browse
-   (`filters.issue_uuid`, no text, `sort: pages:asc`) pages a whole paper.
-9. Keep a hit's `event_id` to open it; multi-event components (a notice
-   listing eight deaths) are one uuid with several events - `expand_events`
-   shows each.
-10. Cite the paper, the date and the label on every hit; give the site link
-    and the Library of Congress PDF only when you show full text; quote only
-    from full text you fetched.

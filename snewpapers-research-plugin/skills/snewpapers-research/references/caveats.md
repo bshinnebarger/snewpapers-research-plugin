@@ -1,13 +1,12 @@
 # Caveats and nuances
 
-**Coverage.** A small fraction of Chronicling America is processed - already an enormous
-corpus, growing daily by tens of thousands of components - and, like Chronicling America
-itself, it is weighted to the 1800s; some regions x decades are still thin or empty (in
-2026, the Midwest in the 1910s). `research_corpus`
-has the honest fraction; `research_titles` and `research_title` show, per paper, "exists at
-the Library of Congress but not processed here". Say so to the researcher instead of
-re-querying five ways, and offer what the corpus does hold (`research_facets` with
-`decade_histogram` and `states`).
+**Coverage.** snewpapers is working towards full coverage of Chronicling America, with the
+index growing by tens of thousands of components daily; the live status is at
+https://snewpapers.com/ca-progress. Like Chronicling America itself, it is weighted to the
+1800s, and some regions x decades are still thin or empty. `research_corpus` has the honest
+fraction; `research_titles` and `research_title` show, per paper, "exists at the Library of
+Congress but not processed here". Say so to the researcher instead of re-querying five ways,
+and offer what the corpus does hold (`research_facets` with `decade_histogram` and `states`).
 
 **Never-embed genres.** runaway, auction, cost_of_goods, reward, personal_ad, errata,
 epigraph, puzzles, schedules and listings are never indexed for meaning, so `semantic_text`
@@ -56,9 +55,6 @@ ads: `advertisement` is not a label the API returns, so do not search for them o
 their absence as a finding. (Ad-like genres that ARE served: auction, runaway, reward,
 personal_ad, cost_of_goods, commercial.)
 
-**`mcp-remote` disappears when the npx cache is wiped** (a client-side thing): install it
-globally or pin its path in the host's MCP config so the connector survives a cache clean.
-
 **Some hosts cache the tool list across restarts** (Grok Bot does, with nothing on the
 user's side to flush). The tool descriptions you see may be older than the server's; this
 file and the API reference are the current word, and a changed rule always shows in the
@@ -77,7 +73,9 @@ issue; sometimes a decorative drop-cap confused line discovery; sometimes a genu
 find a continuation: first check coverage (`research_title` with the year shows which issues
 of that paper are processed - the next issue may simply not be here yet), then search the
 same `lccns` with `sort: issue_date:asc` from that date with a few distinctive words in
-`should_have_keywords`. A "stories like this" call is planned and will make this one step.
+`should_have_keywords`. For "stories like this one" anywhere in the corpus: `research_search` with
+`semantic_text` set to the component's summary, `exclude_uuids` holding the one in hand, and
+whatever `lccns` or date window fits - the semantic index matches meaning, not wording.
 
 **Multi-event components.** A notice listing eight deaths is one uuid with eight events. A
 search collapses to the best event per component unless `expand_events: true`; the
@@ -104,7 +102,8 @@ wants that edition.
 **expand_events floods.** One fourteen-deserter notice can fill a page with its own events.
 After expanding, use facets or `exclude_uuids` if you need breadth rather than depth.
 
-**Paging.** Page 2+ needs the cursor from page 1; it expires ~10 minutes after its last use.
+**Paging.** Page 2+ needs the cursor from page 1; it expires 2 minutes after its last use, and
+the last page carries no cursor (`cursor: null` means there is nothing further to ask for).
 A search stops at page 10 - if you want more, narrow (facets, filters, dates), do not grind.
 Issue browse is the one place paging deep is right.
 
