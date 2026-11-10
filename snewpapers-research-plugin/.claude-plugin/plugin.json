@@ -1,0 +1,10 @@
+{
+  "name": "snewpapers-research",
+  "displayName": "snewpapers Research",
+  "version": "1.0.0",
+  "description": "Research historical US newspapers (1736-1963) with the snewpapers connector: the research method as a skill, plus the MCP server that searches, facets and reads the archive's components with citations.",
+  "author": { "name": "snewpapers", "url": "https://snewpapers.com" },
+  "homepage": "https://snewpapers.com/connect",
+  "license": "MIT",
+  "keywords": ["history", "newspapers", "research", "archives", "genealogy", "primary-sources"]
+}

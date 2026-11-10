@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "snewpapers": {
+      "type": "http",
+      "url": "https://mcp.snewpapers.com/mcp"
+    }
+  }
+}
