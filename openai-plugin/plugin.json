@@ -1,0 +1,124 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "snewpapers-research",
+  "version": "1.0.1",
+  "description": "Research historical US newspapers (1736-1963) through the SNEWPapers connector: the research method as a skill, plus the MCP server that searches, facets and reads the archive's components with citations.",
+  "author": {
+    "name": "SNEWPapers",
+    "email": "support@snewpapers.com",
+    "url": "https://snewpapers.com"
+  },
+  "homepage": "https://snewpapers.com/connect",
+  "repository": "https://github.com/bshinnebarger/snewpapers-research-plugin",
+  "license": "MIT",
+  "keywords": [
+    "history",
+    "newspapers",
+    "research",
+    "archives",
+    "genealogy",
+    "primary-sources"
+  ],
+  "extensions": {
+    "com.openai": {
+      "onboardingSkill": "./skills/snewpapers-research/SKILL.md",
+      "interface": {
+        "displayName": "SNEWPapers Research",
+        "shortDescription": "Historical US newspapers",
+        "longDescription": "SNEWPapers gives ChatGPT a research corpus built from the Library of Congress' Chronicling America newspaper collection. Every page is cut into components, a news story, an obituary, a runaway advertisement, a letter to the editor, a poem and many more types, each carrying the fully extracted text, a summary, the people and places it names, a genre label with structured fields for that type, a text-quality tier, and a link to the page on snewpapers.com and at the Library of Congress.\n\nChatGPT follows a research method rather than guessing: it checks what the corpus covers for a place and a period (the index grows by tens of thousands of components a day), counts what matches a genre, a phrase or a topic before spending anything, reads pages of 25 summaries found by keyword, exact phrase or meaning, and opens only the components that matter, with their full text on request. Everything is read-only, and every result cites the paper, the date and the page with a link.\n\nHistorical newspapers print the past as it was. Anything with a caution flag may contain content offensive to modern readers; it is withheld unless the researcher asks for it. Nothing from a conversation reaches SNEWPapers except the requests ChatGPT makes.\n\nA SNEWPapers subscription or trial is required (sign up at snewpapers.com; this app sells nothing). Each subscription comes with a monthly token allowance; every call reports its cost and the remaining balance, and a free guide explains the whole method before the first search.",
+        "developerName": "SNEWPapers",
+        "category": "Productivity",
+        "capabilities": [
+          "Check which papers, places and decades the corpus covers before searching",
+          "Count what matches a place, a period, a genre or a phrase with facets",
+          "Search pages of article summaries by keyword, exact phrase or meaning",
+          "Read a component whole, with its full text on request, and cite it",
+          "Find obituaries, runaway advertisements, letters and notices by name, place or period",
+          "Browse a whole issue of a newspaper in page order"
+        ],
+        "websiteURL": "https://snewpapers.com/connect",
+        "supportURL": "https://snewpapers.com/contact",
+        "privacyPolicyURL": "https://snewpapers.com/privacy",
+        "termsOfServiceURL": "https://snewpapers.com/terms",
+        "defaultPrompt": [
+          "What did Louisiana newspapers print about yellow fever in New Orleans in 1853?",
+          "Find runaway advertisements that name a blacksmith, with the reward offered",
+          "Which Ohio newspapers from the 1840s are covered, and what do they hold?"
+        ],
+        "logo": "./assets/logo.png",
+        "composerIcon": "./assets/logo.png",
+        "brandColor": "#8b2500",
+        "brandColorDark": "#b9860c"
+      },
+      "review": {
+        "commerce": false,
+        "demo_recording_url": "DEMO_URL_PLACEHOLDER",
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Orientation: the researcher asks what the corpus is. The free guide and corpus summary run before any paid call, and the answer states the span, the size, the decade weighting and that coverage is still growing.",
+              "prompt": "What is in the SNEWPapers corpus, and how should I use it?",
+              "tools_triggered": [
+                "research_guide",
+                "research_corpus"
+              ],
+              "expected_behavior": "ChatGPT calls research_guide (free) and research_corpus (free), then describes the corpus: historical US newspapers 1736-1963 cut into components, the live size and decade histogram, that coverage is partial and growing, and the research method (coverage first, facets before search, full text only when needed). No tokens are charged."
+            },
+            {
+              "description": "Coverage before topic: a question tied to a place and a period. ChatGPT checks coverage with a facet call before any search and reports the honest picture.",
+              "prompt": "Which Louisiana newspapers from the 1850s does SNEWPapers cover?",
+              "tools_triggered": [
+                "research_facets"
+              ],
+              "expected_behavior": "ChatGPT calls research_facets with a Louisiana state filter and a decade histogram (2 tokens), then lists the papers and years that are covered and says plainly which parts are thin or absent, offering the nearest alternatives rather than re-querying."
+            },
+            {
+              "description": "A topic search that returns a page of cited summaries. The reviewer can check that every hit carries the paper, the date, the label and a snewpapers.com link, and that no full text is fetched unasked.",
+              "prompt": "Find reports of yellow fever in New Orleans in 1853 and show me a page of summaries.",
+              "tools_triggered": [
+                "research_facets",
+                "research_search"
+              ],
+              "expected_behavior": "ChatGPT anchors on the phrase 'yellow fever' with an 1853 date window (optionally a facet call first), calls research_search (1 token), and presents up to 25 summaries as short blocks: paper, date, label, summary, link. It reports the tokens charged and remaining."
+            },
+            {
+              "description": "Reading one component in full on request. Full text is the metered move (3 tokens, once per component); the response shows the citation, the Library of Congress link and the structured fields for its genre.",
+              "prompt": "Open the first of those in full and give me the citation.",
+              "tools_triggered": [
+                "research_component"
+              ],
+              "expected_behavior": "ChatGPT calls research_component with the hit's event id and include_text true, then shows the full text headed by the citation (paper, date, page), the structured fields, the snewpapers.com link and the Library of Congress page link, and the 3 tokens charged. It quotes only from the fetched text."
+            },
+            {
+              "description": "Structured-field research in a genre that is never semantically indexed: runaway advertisements are found by keywords and fields, and the answer tabulates the fields the reviewer asked for.",
+              "prompt": "Find runaway advertisements that name a blacksmith, with the reward offered and where the owner thought he was headed.",
+              "tools_triggered": [
+                "research_vocabulary",
+                "research_search",
+                "research_components"
+              ],
+              "expected_behavior": "ChatGPT filters on the runaway label, uses keyword search for 'blacksmith' (not semantic search, which does not reach this genre), opens a few hits with research_components, and tabulates the name, the reward and the suspected destination from the structured fields, each row with its citation and link."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Out of scope by period: the corpus ends in 1963. ChatGPT should say so and not run paid searches that cannot succeed, offering the nearest decades the corpus does hold.",
+              "prompt": "What did American newspapers say about the moon landing in 1969?"
+            },
+            {
+              "description": "Out of scope by place: the corpus is US newspapers from Chronicling America. ChatGPT should decline to search for a non-US paper and explain the corpus boundary rather than guess.",
+              "prompt": "Find me the Times of London's coverage of the Crimean War."
+            },
+            {
+              "description": "A write or modification request: every tool is read-only. ChatGPT should explain that it cannot correct, delete or add to the archive, and point to the snewpapers.com support contact for corrections.",
+              "prompt": "That obituary has a typo in the name - please fix it in the SNEWPapers database."
+            }
+          ]
+        }
+      },
+      "publication": {
+        "release_notes": "First submission: the SNEWPapers research connector with its skill."
+      }
+    }
+  }
+}

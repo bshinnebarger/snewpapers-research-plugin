@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "snewpapers": {
+      "type": "streamable-http",
+      "url": "https://mcp.snewpapers.com/mcp",
+      "oauth": {
+        "tokenEndpointAuthMethod": "private_key_jwt",
+        "scopes": [
+          "research:read",
+          "research:text",
+          "offline_access"
+        ]
+      }
+    }
+  }
+}
