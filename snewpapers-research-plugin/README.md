@@ -1,4 +1,4 @@
-# snewpapers Research
+# SNEWPapers Research
 
 Research historical US newspapers, 1736 to 1963, from a conversation with Claude. The archive holds
 newspaper pages from the Library of Congress' Chronicling America collection, cut into components
